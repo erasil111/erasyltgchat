@@ -239,8 +239,6 @@ async def cmd_generate(message: types.Message):
         await message.answer("⚙️ Предыдущее видео ещё создаётся. Подожди немного 🙌")
         return
 
-    active_generations[user_id] = True  # ставим флаг активности
-
     try:
         args = message.text.split(maxsplit=1)
         if len(args) < 2 or not args[1].strip():
@@ -248,10 +246,14 @@ async def cmd_generate(message: types.Message):
             return
 
         description = args[1].strip()
+
         ok = consume_token(user_id)
         if not ok:
             await message.answer("💸 У тебя 0 токенов. Купи токены — /buy")
             return
+
+        # Ставим флаг **только после всех проверок**
+        active_generations[user_id] = True
 
         await message.answer("✅ Токен списан. Видео создаётся, это может занять 5–10 минут...")
         asyncio.create_task(_background_generate(user_id, message.chat.id, description, message.from_user.username or ""))
@@ -261,6 +263,7 @@ async def cmd_generate(message: types.Message):
         await message.answer("❌ Произошла ошибка. Попробуй позже.")
         add_tokens_by_id(user_id, 1)
 
+
     # флаг снимется внутри фоновой функции
 
 
@@ -269,12 +272,9 @@ async def cmd_generate(message: types.Message):
 async def handle_photo(message: types.Message):
     user_id = message.from_user.id
 
-    # Проверяем, не идёт ли уже генерация
     if active_generations.get(user_id):
         await message.answer("⚙️ Предыдущее видео ещё создаётся. Подожди немного 🙌")
         return
-
-    active_generations[user_id] = True  # ставим флаг активности
 
     try:
         caption = message.caption or ""
@@ -289,6 +289,9 @@ async def handle_photo(message: types.Message):
         if not ok:
             await message.answer("💸 У тебя 0 токенов. Купи токены — /buy")
             return
+
+        # Ставим флаг только после всех проверок
+        active_generations[user_id] = True
 
         await message.answer("✅ Токен списан. Видео создаётся, это может занять 5–10 минут...")
         asyncio.create_task(_background_generate_photo(user_id, message.chat.id, caption, file_id, message.from_user.username or ""))
