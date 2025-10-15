@@ -27,6 +27,7 @@ async def cmd_start(message: types.Message):
     text = (
         f"👋 Добро пожаловать! {user.first_name or 'друг'}!\n\n"
         f"💰 Баланс: {balance} токен(ов)\n\n"
+        f"Сделайте первое пробное видео всего за 300тг\n\n"
         f"✨ Команды:\n"
         f"/help — справка\n"
         f"/balance — баланс\n"
@@ -118,6 +119,16 @@ async def cmd_balance(message: types.Message):
     user = message.from_user
     bal = get_balance(user.id)
     await message.answer(f"💰 Твой баланс: {bal} токен(ов)")
+
+@dp.message(Command("invite"))
+async def cmd_invite(message: types.Message):
+    text = (
+        "ℹ️ О проекте\n"
+
+"Пригласи своего друга\n"
+"Если он скажет что пришел от вас(ваш user name) то подарим вам 50% скидку на следующее использование\n"
+    )
+    await message.answer(text)
 
 
 @dp.message(Command("buy"))
