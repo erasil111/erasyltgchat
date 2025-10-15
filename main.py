@@ -33,6 +33,7 @@ async def cmd_start(message: types.Message):
         f"/balance — баланс\n"
         f"/buy — купить токены\n"
         f"/generate <описание> — создать видео\n"
+        f"/invite — пригласи друга и получи 50% скидку\n"
         f"ℹ️Используя бота, вы соглашаетесь с правилами /terms"
     )
     await message.answer(text)
